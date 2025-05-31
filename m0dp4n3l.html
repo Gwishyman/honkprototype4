@@ -1,0 +1,29 @@
+<center><h1 id="verification">Verifying you are a moderator...
+</h1><h2 id="error"></h2></center>
+<script>
+    const menu = document.getElementById("verification")
+    const er = document.getElementById("error")
+    const username = localStorage.getItem("usernameStorage")
+
+    if (!username) {
+        window.location.href = "index.html";
+    }
+
+    if (username !== "admin", "moderator", "gwishyman") {
+        
+    }
+    else
+    {
+        window.location.href = "index.html";
+    }
+    setTimeout(function() {
+        menu.textContent = "Verified!";
+        setTimeout(function() {
+            menu.textContent = "Opening Menu...";
+            setTimeout(function() {
+            menu.textContent = "Admin Menu";
+            er.textContent = "No commands available currently.";
+        }, 3000)
+        }, 1000)
+      }, 2000);
+</script>
