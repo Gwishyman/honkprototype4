@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Honk - Account</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js"
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js"
+    import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js"
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyAv5u9HIhVmXu1qi_5hiNKcoxWs2YDC2f0",
+      authDomain: "honk-16869.firebaseapp.com",
+      databaseURL: "https://honk-16869-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "honk-16869",
+      storageBucket: "honk-16869.appspot.com",
+      messagingSenderId: "561612681140",
+      appId: "1:561612681140:web:64cb008b0730a22a408ce1",
+      measurementId: "G-7KGT1FY7SQ"
+    }
+
+    const app = initializeApp(firebaseConfig)
+    const auth = getAuth(app)
+    const db = getFirestore(app)
+
+    let darkMode = localStorage.getItem("theme") !== "light"
+
+    function updateImages() {
+      const icons = document.querySelectorAll(".icon")
+      const settingsIcon = document.getElementById("settings-icon")
+      const logo = document.getElementById("logo")
+      const prefix = darkMode ? "Images/dark" : "Images/"
+      icons.forEach(icon => {
+        const name = icon.getAttribute("data-name")
+        icon.src = `${prefix}${name}.png`
+      })
+      settingsIcon.src = darkMode ? "Images/settings.png" : "Images/settingslight.png"
+      logo.src = darkMode ? "Images/honklogotransparent.png" : "Images/honklogolightmode.png"
+    }
+
+    function applyTheme() {
+      const page = document.getElementById("page")
+      if (darkMode) {
+        page.classList.add("dark-mode")
+      } else {
+        page.classList.remove("dark-mode")
+      }
+      updateImages()
+    }
+
+    function toggleTheme() {
+      darkMode = !darkMode
+      localStorage.setItem("theme", darkMode ? "dark" : "light")
+      applyTheme()
+    }
+
+    function logout() {
+      signOut(auth).then(() => {
+        window.location.href = "index.html"
+      })
+    }
+
+    window.toggleSettingsMenu = function () {
+      const menu = document.getElementById("settings-menu")
+      menu.style.display = menu.style.display === "block" ? "none" : "block"
+    }
+
+    window.logout = logout
+
+    window.addEventListener("DOMContentLoaded", () => {
+      applyTheme()
+
+      onAuthStateChanged(auth, async user => {
+        if (!user) {
+          window.location.href = "index.html"
+          return
+        }
+
+        const userDoc = doc(db, "users", user.uid)
+        const snapshot = await getDoc(userDoc)
+
+        let username = "User"
+        let description = ""
+
+        if (snapshot.exists()) {
+          const data = snapshot.data()
+          username = data.username || "User"
+          description = data.description || ""
+        } else {
+          await setDoc(userDoc, { username: "User", description: "" })
+        }
+
+        document.getElementById("username").textContent = username
+
+        const descriptionInput = document.getElementById("description")
+        descriptionInput.value = description
+
+        let timeout
+        descriptionInput.addEventListener("input", () => {
+          clearTimeout(timeout)
+          timeout = setTimeout(() => {
+            setDoc(userDoc, {
+              username,
+              description: descriptionInput.value
+            })
+          }, 300)
+        })
+      })
+    })
+  </script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', sans-serif;
+    }
+    body {
+      background-color: #fff;
+      color: #000;
+      transition: background-color 0.3s, color 0.3s;
+      zoom: 1.75;
+    }
+    .dark-mode {
+      background-color: #0d1117;
+      color: white;
+    }
+    .top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 20px;
+      border-bottom: 2px solid #000;
+    }
+    .top-left img {
+      height: 32px;
+    }
+    .top-center {
+      display: flex;
+      gap: 25px;
+    }
+    .top-center img {
+      height: 30px;
+      cursor: pointer;
+    }
+    .top-right {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+    }
+    .top-right img {
+      height: 30px;
+      cursor: pointer;
+    }
+    #settings-menu {
+      position: absolute;
+      top: 60px;
+      right: 20px;
+      background: white;
+      color: black;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      padding: 10px;
+      display: none;
+      z-index: 100;
+    }
+    .dark-mode #settings-menu {
+      background: #0d1117;
+      color: white;
+      border-color: #444;
+    }
+    #settings-menu div {
+      padding: 8px;
+      cursor: pointer;
+    }
+    #settings-menu div:hover {
+      background-color: #eee;
+    }
+    .dark-mode #settings-menu div:hover {
+      background-color: #1a1a1a;
+    }
+    .account-section {
+      padding: 40px;
+      max-width: 500px;
+      margin: auto;
+    }
+    .account-section h1 {
+      margin-bottom: 20px;
+      font-size: 24px;
+    }
+    .account-section textarea {
+      width: 100%;
+      height: 120px;
+      padding: 10px;
+      font-size: 16px;
+      border: 1px solid #aaa;
+      border-radius: 8px;
+      resize: vertical;
+      background: transparent;
+      color: inherit;
+    }
+    .dark-mode textarea {
+      border-color: #444;
+    }
+  </style>
+</head>
+<body id="page">
+  <div class="top-bar">
+    <div class="top-left">
+      <img id="logo" src="" alt="Honk Logo">
+    </div>
+    <div class="top-center">
+      <a href="home.html"><img class="icon" data-name="home" alt="Home"></a>
+      <a href="search.html"><img class="icon" data-name="search" alt="Search"></a>
+      <a href="create.html"><img class="icon" data-name="create" alt="Create"></a>
+      <a href="chat.html"><img class="icon" data-name="chat" alt="Chat"></a>
+      <a href="account.html"><img class="icon" data-name="account" alt="Account"></a>
+    </div>
+    <div class="top-right">
+      <img id="settings-icon" src="" alt="Settings" onclick="toggleSettingsMenu()">
+    </div>
+  </div>
+
+  <div id="settings-menu">
+    <div onclick="toggleTheme()">Toggle Light/Dark Mode</div>
+    <div onclick="logout()">Log Out</div>
+    <div onclick="alert('y did u click ts vro 🥀💔')">hawk tuah skibidi toilet mode</div>
+  </div>
+
+  <div class="account-section">
+    <h1 id="username">Loading...</h1>
+    <textarea id="description" placeholder="Write your description..."></textarea>
+  </div>
+</body>
+</html>

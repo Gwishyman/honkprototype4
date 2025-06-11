@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Profile</title>
+  <script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAv5u9HIhVmXu1qi_5hiNKcoxWs2YDC2f0",
+  authDomain: "honk-16869.firebaseapp.com",
+  projectId: "honk-16869",
+  storageBucket: "honk-16869.appspot.com",
+  messagingSenderId: "561612681140",
+  appId: "1:561612681140:web:64cb008b0730a22a408ce1",
+  measurementId: "G-7KGT1FY7SQ"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+const urlParams = new URLSearchParams(window.location.search);
+const uid = urlParams.get('uid');
+
+if (!uid) {
+  document.getElementById('username').textContent = 'User not found';
+} else {
+  const userDocRef = doc(db, 'users', uid);
+  getDoc(userDocRef).then((docSnap) => {
+    if (docSnap.exists()) {
+      const userData = docSnap.data();
+      document.getElementById('username').textContent = userData.username;
+      document.getElementById('description').textContent = userData.description || '';
+    } else {
+      document.getElementById('username').textContent = 'User not found';
+    }
+  }).catch((error) => {
+    console.error('Error fetching user data:', error);
+    document.getElementById('username').textContent = 'Error loading profile';
+  });
+}
+
+  </script>
+</head>
+<body>
+<h1 id="username">Loading...</h1>
+<p id="description"></p>
+</body>
+</html>

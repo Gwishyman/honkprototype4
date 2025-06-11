@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script type="module" src="auth.js"></script>
+  <meta charset="UTF-8">
+  <title>Honk - Homepage</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    html {
+      transform: scale(1.75);
+      transform-origin: top left;
+      width: 57.15%;
+      overflow-x: hidden;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', sans-serif;
+    }
+    body {
+      background-color: #fff;
+      color: #000;
+      transition: background-color 0.3s, color 0.3s;
+    }
+    .dark-mode {
+      background-color: #0d1117;
+      color: white;
+    }
+    .top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 20px;
+      border-bottom: 2px solid #000;
+    }
+    .top-left img {
+      height: 32px;
+    }
+    .top-center {
+      display: flex;
+      gap: 25px;
+    }
+    .top-center img {
+      height: 30px;
+      cursor: pointer;
+    }
+    .top-right {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+    }
+    .top-right img {
+      height: 30px;
+      cursor: pointer;
+    }
+    .post {
+      padding: 20px;
+      max-width: 400px;
+      margin: auto;
+    }
+    .post .user {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: bold;
+    }
+    .post img.media {
+      width: 100%;
+      margin: 15px 0;
+    }
+    .post .caption {
+      font-weight: bold;
+    }
+    .actions {
+      display: flex;
+      gap: 15px;
+      margin-top: 10px;
+    }
+    .actions img {
+      height: 24px;
+      cursor: pointer;
+    }
+    #settings-menu {
+      position: absolute;
+      top: 60px;
+      right: 20px;
+      background: white;
+      color: black;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      padding: 10px;
+      display: none;
+      z-index: 100;
+    }
+    .dark-mode #settings-menu {
+      background: #0d1117;
+      color: white;
+      border-color: #444;
+    }
+    #settings-menu div {
+      padding: 8px;
+      cursor: pointer;
+    }
+    #settings-menu div:hover {
+      background-color: #eee;
+    }
+    .dark-mode #settings-menu div:hover {
+      background-color: #1a1a1a;
+    }
+  </style>
+</head>
+<body id="page">
+  <div class="top-bar">
+    <div class="top-left">
+      <img id="logo" src="" alt="Honk Logo">
+    </div>
+    <div class="top-center">
+      <a href="home.html"><img class="icon" data-name="home" alt="Home"></a>
+      <a href="search.html"><img class="icon" data-name="search" alt="Search"></a>
+      <a href="create.html"><img class="icon" data-name="create" alt="Create"></a>
+      <a href="chat.html"><img class="icon" data-name="chat" alt="Chat"></a>
+      <a href="account.html"><img class="icon" data-name="account" alt="Account"></a>
+      <!-- moderator thing that im not bothered to do <a href="m0dp4n3l.html"><img class="icon" data-name="moderator" alt="Moderator Actions"></a> -->
+    </div>
+    <div class="top-right">
+      <img id="settings-icon" src="" alt="Settings" onclick="toggleSettingsMenu()">
+    </div>
+  </div>
+
+  <div id="settings-menu">
+    <div onclick="toggleTheme()">Toggle Light/Dark Mode</div>
+    <div onclick="logout()">Log Out</div>
+    <div onclick="alert('y did u click ts vro 🥀💔')">hawk tuah skibidi toilet mode</div>
+  </div>
+
+  <div class="post">
+    <div class="user">
+      <img src="Images/profilepic.png" alt="User" height="20">
+      <div>
+        Guahh<br>
+        <small>29/5/25</small>
+      </div>
+    </div>
+    <img src="Images/placeholder_icon.png" class="media" alt="Example Media">
+    <div class="caption">Example Photo/Video</div>
+    <div class="actions">
+      <img src="Images/like.png" alt="Like">
+      <img src="Images/comment.png" alt="Comment">
+      <img src="Images/save.png" alt="Save">
+    </div>
+  </div>
+
+  <div class="post">
+    <div class="user">
+      <img src="Images/profilepic.png" alt="User" height="20">
+      <div>
+        Gwishyman<br>
+        <small>29/5/25</small>
+      </div>
+    </div>
+    <img src="Images/placeholder_icon.png" class="media" alt="Example Media">
+    <div class="caption">Example Photo/Video</div>
+    <div class="actions">
+      <img src="Images/like.png" alt="Like">
+      <img src="Images/comment.png" alt="Comment">
+      <img src="Images/save.png" alt="Save">
+    </div>
+  </div>
+
+  <script>
+    function toggleSettingsMenu() {
+      const menu = document.getElementById("settings-menu")
+      menu.style.display = menu.style.display === "block" ? "none" : "block"
+    }
+
+    let darkMode = localStorage.getItem("theme") !== "light"
+    const username = localStorage.getItem("usernameStorage")
+    if (!username) window.location.href = "index.html"
+
+    function updateImages() {
+      const icons = document.querySelectorAll(".icon")
+      const settingsIcon = document.getElementById("settings-icon")
+      const logo = document.getElementById("logo")
+      const prefix = darkMode ? "Images/dark" : "Images/"
+      icons.forEach(icon => {
+        const name = icon.getAttribute("data-name")
+        icon.src = `${prefix}${name}.png`
+      })
+      settingsIcon.src = darkMode ? "Images/settings.png" : "Images/settingslight.png"
+      logo.src = darkMode ? "Images/honklogotransparent.png" : "Images/honklogolightmode.png"
+    }
+
+    function applyTheme() {
+      const page = document.getElementById("page")
+      if (darkMode) {
+        page.classList.add("dark-mode")
+      } else {
+        page.classList.remove("dark-mode")
+      }
+      updateImages()
+    }
+
+    function toggleTheme() {
+      darkMode = !darkMode
+      localStorage.setItem("theme", darkMode ? "dark" : "light")
+      applyTheme()
+    }
+
+    window.addEventListener("DOMContentLoaded", applyTheme)
+    function logout() {
+      signOut(auth).then(() => {
+        localStorage.clear()
+        window.location.href = "index.html"
+      }).catch(error => {
+        console.error("Error signing out:", error)
+      })
+    }
+
+    window.logout = logout
+  </script>
+</body>
+</html>

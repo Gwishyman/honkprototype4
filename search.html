@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Search Users</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', sans-serif;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow-x: hidden;
+    }
+
+    .scale-wrapper {
+      transform: scale(1.75);
+      transform-origin: top left;
+      width: calc(100% / 1.75);
+    }
+
+    body {
+      background-color: #0d1117;
+      color: #fff;
+      transition: background-color 0.3s, color 0.3s;
+    }
+  </style>
+
+  <script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAv5u9HIhVmXu1qi_5hiNKcoxWs2YDC2f0",
+  authDomain: "honk-16869.firebaseapp.com",
+  projectId: "honk-16869",
+  storageBucket: "honk-16869.appspot.com",
+  messagingSenderId: "561612681140",
+  appId: "1:561612681140:web:64cb008b0730a22a408ce1",
+  measurementId: "G-7KGT1FY7SQ"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+const searchInput = document.getElementById('searchInput');
+const resultsList = document.getElementById('resultsList');
+
+searchInput.addEventListener('input', async () => {
+  const searchText = searchInput.value.trim();
+  resultsList.innerHTML = '';
+
+  if (searchText === '') return;
+
+  const usersRef = collection(db, 'users');
+  const q = query(usersRef, where('username', '>=', searchText), where('username', '<=', searchText + '\uf8ff'));
+  const querySnapshot = await getDocs(q);
+
+  querySnapshot.forEach((doc) => {
+    const user = doc.data();
+    const li = document.createElement('li');
+    li.textContent = user.username;
+    li.addEventListener('click', () => {
+      window.location.href = `profile.html?uid=${doc.id}`;
+    });
+    resultsList.appendChild(li);
+  });
+});
+  </script>
+</head>
+<body>
+    <center>
+        <input type="text" id="searchInput" placeholder="Search users..." />
+        <ul id="resultsList"></ul>
+    </center>
+</body>
+</html>
